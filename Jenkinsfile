@@ -14,7 +14,7 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Building Docker image...'
-                bat 'docker build -t %IMAGE_NAME%:%IMAGE_TAG% ./backend'
+                bat 'docker build -t %IMAGE_NAME%:%IMAGE_TAG% -f backend/Dockerfile .'
             }
         }
 
@@ -40,7 +40,7 @@ pipeline {
         // STAGE 3 - CODE QUALITY
         stage('Code Quality') {
             steps {
-                echo 'Running code quality checks...'
+                echo 'Running code quality checks with flake8...'
                 bat '''
                     docker run --rm ^
                     -v %CD%\\backend:/app ^
