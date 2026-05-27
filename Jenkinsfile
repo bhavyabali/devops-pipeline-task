@@ -76,13 +76,15 @@ pipeline {
                     docker run -d \
                     --name ${CONTAINER_NAME} \
                     -p 8000:8000 \
+                    -e PROJECT_NAME="FastAPI Pipeline" \
+                    -e SECRET_KEY=testsecretkey \
+                    -e FIRST_SUPERUSER=admin@example.com \
+                    -e FIRST_SUPERUSER_PASSWORD=adminpass \
                     -e POSTGRES_SERVER=localhost \
                     -e POSTGRES_USER=testuser \
                     -e POSTGRES_PASSWORD=testpass \
                     -e POSTGRES_DB=testdb \
-                    -e SECRET_KEY=testsecretkey \
-                    -e FIRST_SUPERUSER=admin@example.com \
-                    -e FIRST_SUPERUSER_PASSWORD=adminpass \
+                    -e BACKEND_CORS_ORIGINS="http://localhost" \
                     ${IMAGE_NAME}:${IMAGE_TAG}
                 '''
                 echo 'Application deployed to staging on port 8000'
@@ -99,13 +101,15 @@ pipeline {
                     docker run -d \
                     --name ${PROD_CONTAINER} \
                     -p 8001:8000 \
+                    -e PROJECT_NAME="FastAPI Pipeline" \
+                    -e SECRET_KEY=prodsecretkey \
+                    -e FIRST_SUPERUSER=admin@example.com \
+                    -e FIRST_SUPERUSER_PASSWORD=adminpass \
                     -e POSTGRES_SERVER=localhost \
                     -e POSTGRES_USER=produser \
                     -e POSTGRES_PASSWORD=prodpass \
                     -e POSTGRES_DB=proddb \
-                    -e SECRET_KEY=prodsecretkey \
-                    -e FIRST_SUPERUSER=admin@example.com \
-                    -e FIRST_SUPERUSER_PASSWORD=adminpass \
+                    -e BACKEND_CORS_ORIGINS="http://localhost" \
                     ${IMAGE_NAME}:production
                 '''
                 echo 'Production release running on port 8001'
