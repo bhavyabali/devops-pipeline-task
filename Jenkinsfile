@@ -47,7 +47,7 @@ pipeline {
                         -v $(pwd):/usr/src \
                         sonarsource/sonar-scanner-cli \
                         -Dsonar.projectKey=fastapi-pipeline \
-                        -Dsonar.sources=backend \
+                        -Dsonar.sources=. \
                         -Dsonar.python.version=3.11 || true
                     '''
                 }
