@@ -44,10 +44,10 @@ pipeline {
                         --network jenkins \
                         -e SONAR_HOST_URL=${SONAR_HOST_URL} \
                         -e SONAR_TOKEN=${SONAR_AUTH_TOKEN} \
-                        -v $(pwd):/usr/src \
+                        -v $(pwd)/backend/app:/usr/src \
                         sonarsource/sonar-scanner-cli \
                         -Dsonar.projectKey=fastapi-pipeline \
-                        -Dsonar.sources=/usr/src/backend/app \
+                        -Dsonar.sources=/usr/src \
                         -Dsonar.python.version=3.11 || true
                     '''
                 }
