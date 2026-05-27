@@ -10,7 +10,6 @@ pipeline {
 
     stages {
 
-        // STAGE 1 - BUILD
         stage('Build') {
             steps {
                 echo 'Building Docker image...'
@@ -18,7 +17,6 @@ pipeline {
             }
         }
 
-        // STAGE 2 - TEST
         stage('Test') {
             steps {
                 echo 'Running automated tests...'
@@ -37,21 +35,25 @@ pipeline {
             }
         }
 
-        // STAGE 3 - CODE QUALITY
         stage('Code Quality') {
             steps {
-                echo 'Running code quality checks with flake8...'
-                bat '''
-                    docker run --rm ^
-                    -v %CD%\\backend:/app ^
-                    -w /app ^
-                    python:3.11-slim ^
-                    sh -c "pip install flake8 --quiet && flake8 app/ --max-line-length=120 --statistics || exit 0"
-                '''
+                echo 'Running SonarQube analysis...'
+                withSonarQubeEnv('SonarQube') {
+                    bat '''
+                        docker run --rm ^
+                        --network jenkins ^
+                        -e SONAR_HOST_URL=%SONAR_HOST_URL% ^
+                        -e SONAR_TOKEN=%SONAR_AUTH_TOKEN% ^
+                        -v %CD%:/usr/src ^
+                        sonarsource/sonar-scanner-cli ^
+                        -Dsonar.projectKey=fastapi-pipeline ^
+                        -Dsonar.sources=backend ^
+                        -Dsonar.python.version=3.11 || exit 0
+                    '''
+                }
             }
         }
 
-        // STAGE 4 - SECURITY
         stage('Security') {
             steps {
                 echo 'Running security scan with Bandit...'
@@ -65,7 +67,6 @@ pipeline {
             }
         }
 
-        // STAGE 5 - DEPLOY (Staging)
         stage('Deploy') {
             steps {
                 echo 'Deploying to staging environment...'
@@ -88,7 +89,6 @@ pipeline {
             }
         }
 
-        // STAGE 6 - RELEASE
         stage('Release') {
             steps {
                 echo 'Tagging and releasing to production...'
@@ -112,7 +112,6 @@ pipeline {
             }
         }
 
-        // STAGE 7 - MONITORING
         stage('Monitoring') {
             steps {
                 echo 'Checking application health...'
